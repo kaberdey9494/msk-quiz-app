@@ -3,6 +3,15 @@ import random
 import requests
 from bs4 import BeautifulSoup
 
+@app.route("/generate_test")
+def generate_test():
+    url = "https://radiopaedia.org/articles/hill-sachs-lesion"
+    res = requests.get(url)
+    soup = BeautifulSoup(res.content, "html.parser")
+    print("🧾 TEST HTML:", soup.prettify()[:1000])
+    return jsonify({"result": "HTML dumped to log"})
+
+
 app = Flask(__name__)
 
 @app.route("/")
