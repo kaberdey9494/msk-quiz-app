@@ -14,7 +14,7 @@ def get_question_from_radiopaedia(slug):
     res = requests.get(url)
     soup = BeautifulSoup(res.content, "html.parser")
 
-    print("🧾 HTML:", soup.prettify()[:1000])  # Log'a HTML çıktısı yaz
+    print("🧾 HTML:", soup.prettify()[:1000])
 
     content_div = (
         soup.find("div", class_="article-body") or
