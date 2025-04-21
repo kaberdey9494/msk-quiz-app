@@ -11,7 +11,10 @@ def index():
 
 def get_question_from_radiopaedia(slug):
     url = f"https://radiopaedia.org/articles/{slug}"
-    res = requests.get(url)
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/113.0.0.0 Safari/537.36"
+    }
+    res = requests.get(url, headers=headers)
     soup = BeautifulSoup(res.content, "html.parser")
 
     print("🧾 HTML:", soup.prettify()[:1000])
@@ -54,7 +57,10 @@ def generate_dynamic():
 @app.route("/generate_test")
 def generate_test():
     url = "https://radiopaedia.org/articles/hill-sachs-lesion"
-    res = requests.get(url)
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/113.0.0.0 Safari/537.36"
+    }
+    res = requests.get(url, headers=headers)
     soup = BeautifulSoup(res.content, "html.parser")
     print("🧾 TEST HTML:", soup.prettify()[:1000])
     return jsonify({"result": "HTML dumped to log"})
