@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MSK Radiology Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 500px; margin: auto; }
+    h2 { font-size: 20px; }
+    button { display: block; width: 100%; padding: 10px; margin: 10px 0; font-size: 16px; }
+    #feedback { font-weight: bold; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>🦴 MSK Quiz</h1>
+  <h2 id="question">Yükleniyor...</h2>
+  <div id="options"></div>
+  <div id="feedback"></div>
+  <button onclick="loadQuestion()">🔁 Yeni Soru</button>
+
+  <script>
+    let correctAnswer = "";
+
+    function loadQuestion() {
+      fetch("/generate")
+        .then(res => res.json())
+        .then(data => {
+          correctAnswer = data.answer;
+          document.getElementById("question").innerText = data.question;
+          const optionsDiv = document.getElementById("options");
+          optionsDiv.innerHTML = "";
+
+          data.options.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.innerText = opt;
+            btn.onclick = () => {
+              document.getElementById("feedback").innerText =
+                opt === correctAnswer ? "✅ Doğru!" : "❌ Yanlış!";
+            };
+            optionsDiv.appendChild(btn);
+          });
+
+          document.getElementById("feedback").innerText = "";
+        });
+    }
+
+    window.onload = loadQuestion;
+  </script>
+</body>
+</html>
