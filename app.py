@@ -16,7 +16,7 @@ def get_question_from_radiopaedia(slug):
         return None
 
     soup = BeautifulSoup(res.content, "html.parser")
-    content_div = soup.find("div", class_="article-section")
+    content_div = soup.find("div", class_="article-body")  # ← güncellendi
     if not content_div:
         return None
 
@@ -37,7 +37,6 @@ def get_question_from_radiopaedia(slug):
         "options": options,
         "answer": correct
     }
-
 @app.route("/generate")
 def generate_dynamic():
     data = get_question_from_radiopaedia("hill-sachs-lesion")  # Geçici olarak sabit başlık
