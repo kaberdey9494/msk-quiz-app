@@ -3,15 +3,6 @@ import random
 import requests
 from bs4 import BeautifulSoup
 
-@app.route("/generate_test")
-def generate_test():
-    url = "https://radiopaedia.org/articles/hill-sachs-lesion"
-    res = requests.get(url)
-    soup = BeautifulSoup(res.content, "html.parser")
-    print("🧾 TEST HTML:", soup.prettify()[:1000])
-    return jsonify({"result": "HTML dumped to log"})
-
-
 app = Flask(__name__)
 
 @app.route("/")
@@ -21,16 +12,10 @@ def index():
 def get_question_from_radiopaedia(slug):
     url = f"https://radiopaedia.org/articles/{slug}"
     res = requests.get(url)
-    if res.status_code != 200:
-        print("🛑 Sayfa erişilemedi:", res.status_code)
-        return None
-
     soup = BeautifulSoup(res.content, "html.parser")
 
-    # 🔍 HTML çıktısını log'a yaz
-    print("🧾 HTML:", soup.prettify()[:1000])  # ilk 1000 karakter log'a gider
+    print("🧾 HTML:", soup.prettify()[:1000])  # Log'a HTML çıktısı yaz
 
-    # Alternatif içerik bloklarını sırayla dene
     content_div = (
         soup.find("div", class_="article-body") or
         soup.find("div", class_="article-section") or
@@ -39,13 +24,11 @@ def get_question_from_radiopaedia(slug):
     )
 
     if not content_div:
-        print("⚠️ İçerik bulunamadı (div None).")
         return None
 
     text = content_div.get_text().replace("\n", " ").strip()
     sentences = text.split(". ")
     if len(sentences) < 5:
-        print("⚠️ Yeterli cümle yok.")
         return None
 
     question = sentences[0].strip() + "?"
@@ -55,20 +38,26 @@ def get_question_from_radiopaedia(slug):
     options = [correct] + wrongs
     random.shuffle(options)
 
-    print("✅ Soru oluşturuldu:", question)
     return {
         "question": question,
         "options": options,
         "answer": correct
     }
 
-
 @app.route("/generate")
 def generate_dynamic():
-    data = get_question_from_radiopaedia("hill-sachs-lesion")  # Geçici olarak sabit başlık
+    data = get_question_from_radiopaedia("hill-sachs-lesion")
     if not data:
         return jsonify({"error": "No question found"})
     return jsonify(data)
+
+@app.route("/generate_test")
+def generate_test():
+    url = "https://radiopaedia.org/articles/hill-sachs-lesion"
+    res = requests.get(url)
+    soup = BeautifulSoup(res.content, "html.parser")
+    print("🧾 TEST HTML:", soup.prettify()[:1000])
+    return jsonify({"result": "HTML dumped to log"})
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=10000)
